@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fran231109</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: #fffbe6; /* Fondo crema */
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+    }
+    audio {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Música -->
+  <audio autoplay loop>
+    <source src="audio/J%20Balvin%20-%20Si%20Tu%20Novio%20Te%20Deja%20Sola%20ft.%20Bad%20Bunny%20(Official%20Video).mp3" type="audio/mpeg">
+    Tu navegador no soporta audio.
+  </audio>
+
+  <!-- Canvas para el efecto -->
+  <canvas id="canvas"></canvas>
+
+  <script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
+
+    window.addEventListener("resize", () => {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+    });
+
+    let pointer = { x: width / 2, y: height / 2 };
+    let particles = [];
+
+    document.addEventListener("mousemove", (e) => {
+      pointer.x = e.clientX;
+      pointer.y = e.clientY;
+    });
+
+    class Particle {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.radius = Math.random() * 8 + 4;
+        this.color = `hsl(${Math.random() * 120 + 160}, 100%, 60%)`; // Verde y azul
+        this.velocityX = (Math.random() - 0.5) * 4;
+        this.velocityY = (Math.random() - 0.5) * 4;
+        this.alpha = 1;
+      }
+
+      update() {
+        this.x += this.velocityX;
+        this.y += this.velocityY;
+        this.alpha -= 0.02;
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.globalAlpha = this.alpha;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+
+      const p = new Particle(pointer.x, pointer.y);
+      particles.push(p);
+
+      for (let i = particles.length - 1; i >= 0; i--) {
+        particles[i].update();
+        particles[i].draw();
+        if (particles[i].alpha <= 0) {
+          particles.splice(i, 1);
+        }
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  </script>
+</body>
+</html>
